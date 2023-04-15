@@ -1,24 +1,32 @@
-import { BrowserProvider, formatEther, InfuraProvider, parseEther } from "ethers";
+import { formatEther, parseEther } from "ethers";
 import { useEffect, useRef, useState } from "react";
+import defaultProvider from "../abi/defaultProvider";
+import walletProvider from "../abi/walletProvider";
+import { useAppContext } from "../hooks/useAppContext";
+
 
 const index = () => {
     const [maticBalance, setMatichBalance] = useState();
-    const [currentAccount, setCurrentAccount] = useState();
-    const provider = new InfuraProvider("maticmum");
+    const {contextState, updateContextState} = useAppContext();
+    const currentAccount = contextState?.currentAccount;
 
     const toRef = useRef();
     const amountRef = useRef();
 
     const handleConnectWalletClick = async () => {
-        const provider = new BrowserProvider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        setCurrentAccount(accounts[0]);
+        const accounts = await walletProvider.send("eth_requestAccounts", []);
+        const accountsMM = await window.ethereum.request({
+            method: "eth_requestAccounts",
+            params: [],
+        })
         console.log(accounts);
         console.log(maticBalance);
+        console.log(accountsMM);
+        updateContextState({currentAccount: accounts[0]});
     }
     
     const getBalance = async () =>{
-        const balance = await provider.getBalance(currentAccount);
+        const balance = await defaultProvider.getBalance(currentAccount);
         return formatEther(balance);
     }
 
@@ -38,15 +46,18 @@ const index = () => {
     const handleSendSubbmit = async (event)=>{
         event.preventDefault()
         try{
-            const provider = new BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+            const signer = await walletProvider.getSigner();
             const tx = await signer.sendTransaction({
+                //указываем адрес получателя
                 to: toRef.current.value, 
+                //указываем количество денег, которые переводим
                 value: parseEther(amountRef.current.value)
             });
             const response = await tx.wait();
+            console.log("transaction complited");
             console.log("response: ", response);
-            setMatichBalance(await getBalance())
+            console.log("hash: ", tx.hash);
+            setMatichBalance(await getBalance());
         }
         catch(error){
             console.error(error);
