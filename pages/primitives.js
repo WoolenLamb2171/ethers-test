@@ -5,6 +5,8 @@ import walletProvider from "../abi/walletProvider"
 
 const Primitives = () => {
   const[isTrue, setIsTrue] = useState();
+  const [smallUint, setSmallUint] = useState(BigInt(0));
+  const [bigUint, setBigUint] = useState(BigInt(0));
   const primitives = new Contract(
     process.env.primitivesAddress,
     process.env.abi,
@@ -25,6 +27,15 @@ const Primitives = () => {
         const isTrue = await primitives.isTrue();
         console.log("isTrue: ", isTrue);
         setIsTrue(isTrue);
+
+        const smallUint = await primitives.smallUint();
+        console.log("smallUint: ", typeof smallUint);
+        setSmallUint(smallUint);
+
+        const bigUint = await primitives.bigUint();
+        console.log("bigUint: ", bigUint);
+        setBigUint(bigUint);
+
       } catch(error){
         console.error(error);
       }
@@ -48,6 +59,8 @@ const Primitives = () => {
       <h3>Bool: {isTrue ? "true" : "false"}</h3>
       <button onClick={() => handleSetTrue(true)}>setTrue</button>
       <button onClick={() => handleSetTrue(false)}>setFalse</button>
+      <h3>SmallUint: {smallUint.toString()}</h3>
+      <h3>BigUint: {bigUint.toString()}</h3>
     </div>
 };
 
