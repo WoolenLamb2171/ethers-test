@@ -11,6 +11,14 @@ const Primitives = () => {
     defaultProvider
   );
 
+  const getPrimitivesWithSigner = async() =>{
+    const signer = await walletProvider.getSigner();
+    const primitivesWithSigner = primitives.connect(signer);
+    // const primitivesWithSigner = new Contract(process.env.primitivesAddress, process.env.abi, signer);
+    return primitivesWithSigner;
+
+  }
+
   useEffect(() => {
     (async () => {
       try{
@@ -25,9 +33,7 @@ const Primitives = () => {
 
   const handleSetTrue = async(isTrue) =>{
     try{
-      const signer = await walletProvider.getSigner();
-      // const primitivesWithSigner = primitives.connect(signer);
-      const primitivesWithSigner = new Contract(process.env.primitivesAddress, process.env.abi, signer);
+      const primitivesWithSigner = await getPrimitivesWithSigner();
       const tx = await primitivesWithSigner.setTrue(isTrue);
       console.log("tx: ", tx);
       const response = await tx.wait();
