@@ -9,6 +9,7 @@ const Primitives = () => {
   const [bigUint, setBigUint] = useState(BigInt(0));
 
   const smallUintRef = useRef();
+  const bigUintRef = useRef();
 
   const primitives = new Contract(
     process.env.primitivesAddress,
@@ -74,18 +75,47 @@ const Primitives = () => {
     }
   }
 
+  const handleNewBigUintSubmit =  async (event) =>{
+    event.preventDefault();
+    try{
+      const primitivesWithSigner = await getPrimitivesWithSigner();
+      const tx = await primitivesWithSigner.setBiglUint(
+        BigInt(
+          bigUintRef.current.value
+        )
+      )
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log(response);
+    }catch(error){
+      console.error(error);
+    }
+  }
+
   return <div>
       <h1>Primitives</h1>
+
       <h3>Bool: {isTrue ? "true" : "false"}</h3>
+
       <button onClick={() => handleSetTrue(true)}>setTrue</button>
+
       <button onClick={() => handleSetTrue(false)}>setFalse</button>
+
       <form onSubmit={handleNewSmallUintSubmit}>
-        <label>New small uint:</label>
+        <label htmlFor="SmallUint">New small uint:</label>
         {/* uint8 can not be greater than 255 */}
-        <input ref={smallUintRef} type="number" min={0} max={255}></input>
+        <input name="SmallUint" ref={smallUintRef} type="number" min={0} max={255}></input>
         <button>Set new small uint</button>
       </form>
+
       <h3>SmallUint: {smallUint.toString()}</h3>
+
+      <form onSubmit={handleNewBigUintSubmit}>
+        <label htmlFor="BigUint">New big uint:</label>
+        <input name="BigUint" ref={bigUintRef} type="number" min={0}></input>
+        <button>Set new big uint</button>
+      </form>
+
       <h3>BigUint: {bigUint.toString()}</h3>
     </div>
 };
