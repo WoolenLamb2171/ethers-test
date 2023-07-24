@@ -1,7 +1,6 @@
-import { Contract } from "ethers";
-import defaultProvider from "../abi/defaultProvider";
 import { useEffect, useRef, useState } from "react";
-import walletProvider from "../abi/walletProvider"
+import { getPrimitivesWithSigner } from "../abi/getPrimitivesWithSigner";
+import { primitives } from "../abi/primitives";
 
 const Primitives = () => {
   const[isTrue, setIsTrue] = useState();
@@ -10,20 +9,6 @@ const Primitives = () => {
 
   const smallUintRef = useRef();
   const bigUintRef = useRef();
-
-  const primitives = new Contract(
-    process.env.primitivesAddress,
-    process.env.abi,
-    defaultProvider
-  );
-
-  const getPrimitivesWithSigner = async() =>{
-    const signer = await walletProvider.getSigner();
-    const primitivesWithSigner = primitives.connect(signer);
-    // const primitivesWithSigner = new Contract(process.env.primitivesAddress, process.env.abi, signer);
-    return primitivesWithSigner;
-
-  }
 
   useEffect(() => {
     (async () => {

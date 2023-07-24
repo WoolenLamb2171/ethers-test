@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import defaultProvider from "../abi/defaultProvider";
 import walletProvider from "../abi/walletProvider";
 import { useAppContext } from "../hooks/useAppContext";
+import connectMetaMask from "../utils/connectMetaMask";
 
 const ProviderAndSigner = () => {
     const [maticBalance, setMatichBalance] = useState();
@@ -13,15 +14,12 @@ const ProviderAndSigner = () => {
     const amountRef = useRef();
 
     const handleConnectWalletClick = async () => {
-        const accounts = await walletProvider.send("eth_requestAccounts", []);
-        const accountsMM = await window.ethereum.request({
-            method: "eth_requestAccounts",
-            params: [],
-        })
-        console.log(accounts);
+        // const accounts = await walletProvider.send("eth_requestAccounts", []);
+        const accountMM = await connectMetaMask();
+        // console.log(accounts);
         console.log(maticBalance);
-        console.log(accountsMM);
-        updateContextState({currentAccount: accounts[0]});
+        // console.log(accountsMM);
+        updateContextState({currentAccount: accountMM});
     }
     
     const getBalance = async () =>{
