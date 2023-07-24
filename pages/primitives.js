@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getPrimitivesWithSigner } from "../abi/getPrimitivesWithSigner";
 import { primitives } from "../abi/primitives";
 import { useAppContext } from "../hooks/useAppContext";
+import { hexlify } from "ethers";
 
 const Primitives = () => {
   const[isTrue, setIsTrue] = useState();
@@ -97,9 +98,17 @@ const Primitives = () => {
 
   const handleNewSmallBytesSubmit = async (event) =>{
     event.preventDefault();
+
+    const utf8Encode = new TextEncoder();
+    //конвертируем строку в массив байтов
+    const bytesArr = utf8Encode.encode(smallBytesRef.current.value);
+    console.log("bytesArr: ",bytesArr);
+    const bytes = hexlify(bytesArr);
+    console.log("bytes: ", bytes);
+
     try{
       const primitivesWithSigner = await getPrimitivesWithSigner();
-      const tx = await primitivesWithSigner.setSmallBytes(smallBytesRef.current.value);
+      const tx = await primitivesWithSigner.setSmallBytes(bytes);
       console.log("tx: ", tx);
       const response = await tx.wait();
       console.log("response: ", response);
@@ -110,9 +119,17 @@ const Primitives = () => {
 
   const handleNewBigBytesSubmit = async (event) => {
     event.preventDefault();
+
+    const utf8Encode = new TextEncoder();
+    //конвертируем строку в массив байтов
+    const bytesArr = utf8Encode.encode(bigBytesRef.current.value);
+    console.log("bytesArr: ",bytesArr);
+    const bytes = hexlify(bytesArr);
+    console.log("bytes: ", bytes);
+
     try{
       const primitivesWithSigner = await getPrimitivesWithSigner();
-      const tx = await primitivesWithSigner.setBigBytes(bigBytesRef.current.value);
+      const tx = await primitivesWithSigner.setBigBytes(bytes);
       console.log("tx: ", tx);
       const response = await tx.wait();
       console.log("response: ", response);
