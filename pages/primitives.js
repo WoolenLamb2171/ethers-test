@@ -112,7 +112,7 @@ const Primitives = () => {
 
       <form onSubmit={handleNewBigUintSubmit}>
         <label htmlFor="BigUint">New big uint:</label>
-        <input name="BigUint" ref={bigUintRef} type="number" min={0}></input>
+        <input name="BigUint" ref={bigUintRef} type="text"></input>
         <button>Set new big uint</button>
       </form>
 
