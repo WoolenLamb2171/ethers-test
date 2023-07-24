@@ -1,29 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import { getPrimitivesWithSigner } from "../abi/getPrimitivesWithSigner";
 import { primitives } from "../abi/primitives";
+import { useAppContext } from "../hooks/useAppContext";
 
 const Primitives = () => {
   const[isTrue, setIsTrue] = useState();
   const [smallUint, setSmallUint] = useState(BigInt(0));
   const [bigUint, setBigUint] = useState(BigInt(0));
+  const [smallBytes, setSmallBytes] = useState("");
+  const [bigBytes, setBigBytes] = useState("");
 
   const smallUintRef = useRef();
   const bigUintRef = useRef();
+  const smallBytesRef = useRef();
+  const bigBytesRef = useRef();
+
+  const {contextState, updateContextState} = useAppContext();
+  const currentAccount = contextState?.currentAccount;
 
   useEffect(() => {
     (async () => {
       try{
         const isTrue = await primitives.isTrue();
-        console.log("isTrue: ", isTrue);
+        // console.log("isTrue: ", isTrue);
         setIsTrue(isTrue);
 
         const smallUint = await primitives.smallUint();
-        console.log("smallUint: ", typeof smallUint);
+        // console.log("smallUint: ", typeof smallUint);
         setSmallUint(smallUint);
 
         const bigUint = await primitives.bigUint();
-        console.log("bigUint: ", bigUint);
+        // console.log("bigUint: ", bigUint);
         setBigUint(bigUint);
+
+        const smallBytes = await primitives.smallBytes();
+        console.log("smallBytes: ", smallBytes);
+        console.log("smallBytes type: ", typeof smallBytes);
+        setSmallBytes(smallBytes);
+
+        const bigBytes = await primitives.bigBytes();
+        console.log("bigBytes: ", bigBytes);
+        console.log("bigBytes type: ", typeof bigBytes);
+        setBigBytes(bigBytes);
 
       } catch(error){
         console.error(error);
@@ -77,14 +95,44 @@ const Primitives = () => {
     }
   }
 
+  const handleNewSmallBytesSubmit = async (event) =>{
+    event.preventDefault();
+    try{
+      const primitivesWithSigner = await getPrimitivesWithSigner();
+      const tx = await primitivesWithSigner.setSmallBytes(smallBytesRef.current.value);
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log("response: ", response);
+    }catch(error){
+      console.error(error)
+    }
+  }
+
+  const handleNewBigBytesSubmit = async (event) => {
+    event.preventDefault();
+    try{
+      const primitivesWithSigner = await getPrimitivesWithSigner();
+      const tx = await primitivesWithSigner.setBigBytes(bigBytesRef.current.value);
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log("response: ", response);
+    }catch(error){
+      console.error(error);
+    }
+  }
+
   return <div>
       <h1>Primitives</h1>
+
+      <h2>Address: {currentAccount}</h2>
 
       <h3>Bool: {isTrue ? "true" : "false"}</h3>
 
       <button onClick={() => handleSetTrue(true)}>setTrue</button>
 
       <button onClick={() => handleSetTrue(false)}>setFalse</button>
+
+      <h3>SmallUint: {smallUint.toString()}</h3>
 
       <form onSubmit={handleNewSmallUintSubmit}>
         <label htmlFor="SmallUint">New small uint:</label>
@@ -93,7 +141,7 @@ const Primitives = () => {
         <button>Set new small uint</button>
       </form>
 
-      <h3>SmallUint: {smallUint.toString()}</h3>
+      <h3>BigUint: {bigUint.toString()}</h3>
 
       <form onSubmit={handleNewBigUintSubmit}>
         <label htmlFor="BigUint">New big uint:</label>
@@ -101,7 +149,21 @@ const Primitives = () => {
         <button>Set new big uint</button>
       </form>
 
-      <h3>BigUint: {bigUint.toString()}</h3>
+      <h3>SmallBytes: {smallBytes}</h3>
+
+      <form onSubmit={handleNewSmallBytesSubmit}>
+        <label htmlFor="SmallBytes">New small bytes:</label>
+        <input name="SmallBytes" type="text" ref={smallBytesRef}></input>
+        <button>Set new small bytes</button>
+      </form>
+
+      <h3>BigBytes: {bigBytes}</h3>
+
+      <form onSubmit={handleNewBigBytesSubmit}>
+        <label htmlFor="BigBytes">New big bytes:</label>
+        <input name="BigBytes" ref={bigBytesRef} type="teaxt"></input>
+        <button>Set new big bytes</button>
+      </form>
     </div>
 };
 
