@@ -81,7 +81,8 @@ const Primitives = () => {
       <button onClick={() => handleSetTrue(false)}>setFalse</button>
       <form onSubmit={handleNewSmallUintSubmit}>
         <label>New small uint:</label>
-        <input ref={smallUintRef} type="number"></input>
+        {/* uint8 can not be greater than 255 */}
+        <input ref={smallUintRef} type="number" min={0} max={255}></input>
         <button>Set new small uint</button>
       </form>
       <h3>SmallUint: {smallUint.toString()}</h3>
