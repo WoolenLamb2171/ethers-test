@@ -68,7 +68,7 @@ const ProviderAndSigner = () => {
         <button onClick={handleConnectWalletClick}>Connect Wallet</button>
         <h1>Send some matic</h1>
         <form onSubmit={handleSendSubbmit}>
-            <labe htmlFor="to">To</labe>
+            <label htmlFor="to">To</label>
             <input ref={toRef} name="to" type="text"  />
             <label htmlFor="amout">Amout of matic</label>
             <input ref={amountRef} type="number" step=".1" name="amout"/>
