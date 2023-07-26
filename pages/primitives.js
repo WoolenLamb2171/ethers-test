@@ -10,11 +10,13 @@ const Primitives = () => {
   const [bigUint, setBigUint] = useState(BigInt(0));
   const [smallBytes, setSmallBytes] = useState("");
   const [bigBytes, setBigBytes] = useState("");
+  const [wallet, setWallet] = useState("");
 
   const smallUintRef = useRef();
   const bigUintRef = useRef();
   const smallBytesRef = useRef();
   const bigBytesRef = useRef();
+  const walletRef = useRef();
 
   const {contextState, updateContextState} = useAppContext();
   const currentAccount = contextState?.currentAccount;
@@ -43,6 +45,11 @@ const Primitives = () => {
         console.log("bigBytes: ", bigBytes);
         console.log("bigBytes type: ", typeof bigBytes);
         setBigBytes(bigBytes);
+
+        const wallet = await primitives.wallet();
+        console.log("wallet: ", wallet);
+        console.log("wallet type: ", typeof wallet);
+        setWallet(wallet);
 
       } catch(error){
         console.error(error);
@@ -138,6 +145,28 @@ const Primitives = () => {
     }
   }
 
+  const handleNewWallet = async (event) =>{
+    event.preventDefault();
+    await setWalletHelper(walletRef.current.value);
+
+  }
+
+  const handleSetMyWalletClick = async () =>{
+    setWalletHelper(currentAccount);
+  }
+
+  const setWalletHelper = async (wallet) =>{
+    try{
+      const primitivesWithSigner = await getPrimitivesWithSigner();
+      const tx = await primitivesWithSigner.setWallet(wallet);
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log("response: ", response);
+    }catch(error){
+      console.error(error);
+    }
+  }
+
   return <div>
       <h1>Primitives</h1>
 
@@ -178,9 +207,19 @@ const Primitives = () => {
 
       <form onSubmit={handleNewBigBytesSubmit}>
         <label htmlFor="BigBytes">New big bytes:</label>
-        <input name="BigBytes" ref={bigBytesRef} type="teaxt"></input>
+        <input name="BigBytes" ref={bigBytesRef} type="text"></input>
         <button>Set new big bytes</button>
       </form>
+
+      <h3>Wallet: {wallet}</h3>
+
+      <form onSubmit={handleNewWallet}>
+        <label htmlFor="Set Wallet">New Wallet:</label>
+        <input name="Set Wallet" ref={walletRef} type="text"></input>
+        <button>Set new Wallet</button>
+        <button onClick={handleSetMyWalletClick}>Set my Wallet</button>
+      </form>
+
     </div>
 };
 
