@@ -11,12 +11,14 @@ const Primitives = () => {
   const [smallBytes, setSmallBytes] = useState("");
   const [bigBytes, setBigBytes] = useState("");
   const [wallet, setWallet] = useState("");
+  const [name, setName] = useState("");
 
   const smallUintRef = useRef();
   const bigUintRef = useRef();
   const smallBytesRef = useRef();
   const bigBytesRef = useRef();
   const walletRef = useRef();
+  const nameRef = useRef();
 
   const {contextState, updateContextState} = useAppContext();
   const currentAccount = contextState?.currentAccount;
@@ -50,6 +52,11 @@ const Primitives = () => {
         console.log("wallet: ", wallet);
         console.log("wallet type: ", typeof wallet);
         setWallet(wallet);
+
+        const name = await primitives.name();
+        console.log("name: ", name);
+        console.log("name type: ", typeof name);
+        setName(name);
 
       } catch(error){
         console.error(error);
@@ -167,6 +174,19 @@ const Primitives = () => {
     }
   }
 
+  const handleNewName = async (event) =>{
+    event.preventDefault();
+    try{
+      const primitivesWithSigner = await getPrimitivesWithSigner();
+      const tx = await primitivesWithSigner.setName(nameRef.current.value);
+      console.log("tx: ", tx);
+      const response = await tx.wait();
+      console.log("response: ", response);
+    }catch(event){
+      console.error(error);
+    }
+  } 
+
   return <div>
       <h1>Primitives</h1>
 
@@ -220,6 +240,13 @@ const Primitives = () => {
         {currentAccount && <button type="button" onClick={handleSetMyWalletClick}>Set my Wallet</button>}
       </form>
       
+      <h3>Name: {name}</h3>
+
+      <form onSubmit={handleNewName}>
+        <label htmlFor="Set name">New Name: </label>
+        <input name="Set name" ref={nameRef} type="text"></input>
+        <button>Set new name</button>
+      </form>
 
     </div>
 };
