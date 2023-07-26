@@ -217,7 +217,7 @@ const Primitives = () => {
         <label htmlFor="Set Wallet">New Wallet:</label>
         <input name="Set Wallet" ref={walletRef} type="text"></input>
         <button>Set new Wallet</button>
-        <button onClick={handleSetMyWalletClick}>Set my Wallet</button>
+        {currentAccount && <button onClick={handleSetMyWalletClick}>Set my Wallet</button>}
       </form>
 
     </div>
